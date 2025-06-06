@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <!-- Título e descrição para SEO -->
+  <title>BuscaCid – Consulta CID-10 Ágil e Gratuita</title>
+  <meta name="description"
+        content="BuscaCid é uma ferramenta online para pesquisar códigos CID-10. Encontre rapidamente códigos e descrições completas para uso acadêmico, clínico e administrativo."/>
+  <meta name="keywords"
+        content="CID-10, busca CID, código CID, doença, classificação CID, site CID"/>
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:title"
+        content="BuscaCid – Consulta CID-10 Ágil e Gratuita"/>
+  <meta property="og:description"
+        content="Encontre códigos CID-10 e suas descrições de forma rápida e prática. Ferramenta gratuita para profissionais de saúde e estudantes."/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:url" content="https://buscacid.com.br/"/>
+  <meta property="og:image" content="https://buscacid.com.br/og-image.png"/>
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title"
+        content="BuscaCid – Consulta CID-10 Ágil e Gratuita"/>
+  <meta name="twitter:description"
+        content="Encontre códigos CID-10 e descrições completas. Ferramenta gratuita para profissionais de saúde."/>
+  <meta name="twitter:image" content="https://buscacid.com.br/twitter-image.png"/>
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://buscacid.com.br/" />
+
+  <!-- AdSense global site tag (substitua pelo seu ca-pub real) -->
+  <script data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" 
+          async 
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+  <!-- Google Analytics (opcional – substitua pelo seu ID GA4 real) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
+
+  <!-- Link para CSS externo -->
+  <link rel="stylesheet" href="/styles.css" />
+
+  <!-- Dados estruturados JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "BuscaCid",
+    "url": "https://buscacid.com.br/",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://buscacid.com.br/?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>BuscaCid</h1>
+
+    <!-- Anúncio AdSense no topo -->
+    <div class="adsense-top">
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-format="auto"
+           data-full-width-responsive="true"
+           data-ad-slot="1111111111"></ins>
+      <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+
+    <!-- Campo de busca -->
+    <input 
+      type="text" 
+      id="search" 
+      placeholder="Digite um código ou termo (ex: hipert, j451, asma)" 
+      oninput="buscar()" 
+      onkeydown="if(event.key==='Enter') buscar()" 
+    />
+    <div class="result" id="result"></div>
+  </div>
+
+  <!-- AdSense no meio da página (exemplo) -->
+  <div style="max-width:750px; margin: 20px auto;">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-format="fluid"
+         data-ad-layout="in-article"
+         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="2222222222"></ins>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+  </div>
+
+  <!-- Carrega data.js de forma assíncrona e inicia a busca se houver ?q= -->
+  <script>
+    function normalizar(texto) {
+      return texto.normalize("NFD")
+                  .replace(/[\u0300-\u036f]/g, "")
+                  .replace(/ç/g, "c")
+                  .replace(/\./g, "")
+                  .toLowerCase();
+    }
+    function formatarCID(cod) {
+      if (cod.length === 4) {
+        return cod.slice(0, 3) + '.' + cod.slice(3);
+      }
+      return cod;
+    }
+    function copiarTexto(texto) {
+      navigator.clipboard.writeText(texto).then(() => {
+        alert('Código copiado: ' + texto);
+      });
+    }
+
+    function buscar() {
+      const input = document.getElementById('search');
+      const termoRaw = input.value.trim();
+      if (!termoRaw) {
+        history.replaceState({}, '', window.location.pathname);
+        atualizarResultados('');
+        return;
+      }
+      // Atualiza a URL sem recarregar
+      const novaUrl = window.location.pathname + '?q=' + encodeURIComponent(termoRaw);
+      history.replaceState({}, '', novaUrl);
+      atualizarResultados(termoRaw);
+    }
+
+    function atualizarResultados(valor) {
+      const termo = normalizar(valor);
+      const palavras = termo.split(/\s+/);
+      const resultados = data.filter(item => {
+        const campos = [
+          normalizar(item.CID),
+          normalizar(item.DESC_SUBCATEGORIA),
+          normalizar(item.DESC_CATEGORIA),
+          normalizar(item.DESC_GRUPO),
+          normalizar(item.DESC_CAPITULO)
+        ].join(' ');
+        return palavras.every(palavra => new RegExp(`\\b${palavra}`, 'i').test(campos));
+      });
+      const div = document.getElementById('result');
+      div.innerHTML = resultados.length ? resultados.map(r => {
+        const cidFormatado = formatarCID(r.CID);
+        return `
+        <div class="item">
+          <div class="cid-header">
+            <strong>${cidFormatado}</strong>
+            <button onclick="copiarTexto('${cidFormatado}')" title="Copiar CID">📋</button>
+          </div>
+          ${r.DESC_SUBCATEGORIA}<br/>
+          <em>${r.DESC_CATEGORIA} / ${r.DESC_GRUPO} / ${r.DESC_CAPITULO}</em>
+        </div>`;
+      }).join('') : "<p>Nenhum resultado encontrado.</p>";
+    }
+
+    // Função para carregar data.js dinamicamente
+    function carregarData(callback) {
+      const s = document.createElement('script');
+      s.src = 'data.js';
+      s.defer = true;
+      s.onload = callback;
+      document.head.appendChild(s);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      carregarData(() => {
+        const params = new URLSearchParams(window.location.search);
+        if (params.has('q')) {
+          const valor = params.get('q');
+          document.getElementById('search').value = valor;
+          atualizarResultados(valor);
+        }
+      });
+    });
+  </script>
+
+  <!-- AdSense no rodapé -->
+  <footer style="max-width:750px; margin: 40px auto; text-align:center;">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-format="auto"
+         data-full-width-responsive="true"
+         data-ad-slot="3333333333"></ins>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+    <p style="font-size:12px; color:#777;">© 2025 BuscaCid – Todos os direitos reservados</p>
+  </footer>
+</body>
+</html>
