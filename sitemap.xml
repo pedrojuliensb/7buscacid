@@ -7,18 +7,22 @@
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
-  <!-- Exemplos de buscas populares (opcional) -->
+
+  <!-- Exemplo: busca “asma” -->
   <url>
     <loc>https://buscacid.com.br/?q=asma</loc>
     <lastmod>2025-06-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+
+  <!-- Exemplo: busca “hipertensao” -->
   <url>
     <loc>https://buscacid.com.br/?q=hipertensao</loc>
     <lastmod>2025-06-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <!-- Você pode incluir mais termos populares, se desejar -->
+
+  <!-- ADICIONE OUTRAS URL’s de buscas populares, se desejar -->
 </urlset>
